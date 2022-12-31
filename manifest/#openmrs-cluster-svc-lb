@@ -1,0 +1,127 @@
+---
+apiVersion: apps/v1
+Kind: Deployment
+metadata:
+  name: open-mrs-deploy
+  labels:
+    environment: production
+    app: open-web
+    ver: UV
+spec:
+  minReadySeconds: '10'
+  replicas: '4'
+  selector:
+    matchLabels:
+      app: open-web
+      ver: UV
+  strategy: 
+    rollingUpdate:
+      maxSurge: 35%
+      maxUnavailable: 30%
+      type: RollingUpdate
+  template:
+    spec:
+      containers:
+        - name: open-mrs
+          image: venu1212/open-mrs:UV
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+
+---
+apiVersion: v1
+Kind: Pod
+metadata:
+  name: openmrs-pod
+  labels:
+    environment: production
+    app: open-web
+    ver: UV
+spec:
+  containers:
+    -name: open-mrs-svc
+    image: venu1212/open-mrs:UV
+    ports:
+      protocol: TCP
+    - containerPort: 8080
+
+---
+apiVersion: v1
+Kind: Service
+metadata: 
+  name: open-mrs-service-lb
+spec:
+  selector:
+    type: LoadBalancer
+ports:
+  - name: openmrs-svc
+    protocol: TCP
+    port: 80
+    targetPort: 9376
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: open-mrs-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: open-mrs
+  rules:
+  - http:
+      paths:
+      - path: /testpath
+        pathType: Prefix
+        backend:
+          service:
+            name: test
+            port:
+              number: 80 
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openmrs-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    external-dns.alpha.kubernetes.io/hostname: mobile.generic123.net
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/group.name: "prod-external"
+spec:
+  rules:
+    - host: mobile.generic123.net
+      http:
+        paths:
+          - path: /gameoflife 
+            pathType: Exact
+            backend:
+              service:
+                name: ssl-redirect
+                port:
+                  name: use-annotation
+          - path: /gameoflife
+            pathType: Exact 
+            backend:
+              service:
+                name: gameoflife-service
+                port:
+                  number: 3000
+          - path: /openmrs
+            pathType: Exact
+            backend:
+              service:
+                name: ssl-redirect
+                port:
+                  name: use-annotation
+          - path: /android
+            pathType: Exact
+            backend:
+              service:
+                name: android-service
+                port:
+                  number: 3000

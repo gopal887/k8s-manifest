@@ -1,0 +1,35 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: simpleingress-example
+#  annotations:
+#   nginx.ingress.kubernetes.io/rewrite-target: /$1
+#    ingress.kubernetes.io/rewrite-target: /
+#    kubernetes.io/ingress.class: addon-http-application-routing
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /gameoflife
+        pathType: Prefix
+        backend:
+          service:
+            name: gameoflife-svc
+            port:
+              number: 8080
+      - path: /openmrs
+        pathType: Prefix
+        backend:
+          service:
+            name: openmrs-svc
+            port:
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata: 
+  name: nginx
+spec:
+  controller: k8s.io/ingress-nginx

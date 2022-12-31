@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-mrs-deploy
+spec:
+  minReadySeconds: 10
+  replicas: 4
+  selector:
+    matchLabels:
+      app: openmrs
+  strategy: 
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      name: open-mrs-deploy
+      labels:
+        app: openmrs
+    spec:
+      containers:
+        - name: open-mrs-deploy
+          image: venu1212/open-mrs:UV
+          ports:
+            - containerPort: 8080
+              protocol: TCP

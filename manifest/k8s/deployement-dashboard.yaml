@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exporter
+  labels:
+    app: saleor
+spec:
+  strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 25
+        maxUnavailable: 25
+  replicas: 1
+  selector:
+    matchLabels:
+      app: saleor
+  template:
+    metadata:
+      labels:
+        app: saleor
+    spec:
+      containers:
+        - name: exporter
+          image: venu1212/saleor-dashboar:Del
+          imagePullPolicy: Always
+          ports:
+            - name: exporter
+              protocol: TCP
+              containerPort: 9540
+          command: 
+            - python
+            - manage.py
+            - runserver
+            - 0.0.0.0:8080

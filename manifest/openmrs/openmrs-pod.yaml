@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: openmrs-pod
+spec:
+  containers:
+   - name: open-mrs
+     image: venu1212/open-mrs:UV
+     ports:
+     - containerPort: 8080
+       protocol: TCP

@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gameoflife
+spec:
+  minReadySeconds: 10
+  replicas: 4
+  selector:
+    matchLabels:
+      app: gameoflife
+  strategy: 
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      name: gameoflife-deploy
+      labels:
+        app: gameoflife
+    spec:
+      containers:
+        - name: gameoflife-pod
+          image: venu1212/gameoflife:DON
+          ports:
+            - containerPort: 8080
+              protocol: TCP

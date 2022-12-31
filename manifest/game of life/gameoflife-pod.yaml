@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gameoflife-pod
+spec:
+  containers:
+   - name: gameoflife
+     image: venu1212/gameoflife:DON
+     ports:
+     - containerPort: 8080
+       protocol: TCP

@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: gameoflife
+spec:
+  minReadySeconds: 10
+  replicas: 4
+  selector:
+    matchLabels:
+        app: gameoflife
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata: 
+      labels: 
+        app: gameoflife
+      name: gameoflife-pod
+    spec:
+      containers:
+        - image: jalasuresh/gameoflife:1.0
+          name: gameoflife-pod
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gameoflife-svc
+spec:
+  selector:
+    app: gameoflife
+  ports:
+    - name: webport
+      port: 35000
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: openmrs-deployment
+spec:
+  minReadySeconds: 10
+  replicas: 4
+  selector:
+    matchLabels:
+        app: openmrs
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata: 
+      labels: 
+        app: openmrs
+      name: openmrs-pod
+    spec:
+      containers:
+        - image: reddy8096/openmrs1.0:latest
+          name: openmrs-pod
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openmrs-svc
+spec:
+  selector:
+    app: openmrs
+  ports:
+    - name: webport
+      port: 35000
+      targetPort: 8080
